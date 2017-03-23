@@ -1,0 +1,831 @@
+<html>
+<title>pacman</title>
+<head>
+<style type=text/css>
+li  {   display:inline;
+	
+	padding-left:30px;
+	padding-right:30px;
+	font-size:35px;
+	}
+
+#play:hover
+	{color:green;}
+#restart:hover
+	{color:green;}
+#highscore:hover
+	{color:green;}
+
+</style>
+<script type=text/javascript src=./jquery.min.js></script>
+<style type="text/css">
+body
+{ 
+	background-color:white;
+}
+.pacmaze .maze img
+{
+	position:relative;
+}
+
+.pacmaze img
+{
+	position:absolute;
+}	
+
+.pacmaze2 .maze2 img
+{
+	position:relative;
+}
+
+.pacmaze2 img
+{
+	position:absolute;
+}	
+
+
+</style>
+<script>
+var score=0;file:///C:/Users/Guru%20Pranav/Desktop/final/hello/maze.jpg
+var dotid=[];
+var ghostid=[];
+var ghost2id=[];
+var i=1;
+var j=1;
+var dotv=[];
+var right=[];
+var left=[];
+var up=[];
+var down=[];
+var k=0;
+var m=2;
+var n=8;
+var x=2;
+var y=7;
+
+function idloading()
+{
+document.getElementById("play").style.color="green";
+for(var a=1;a<6;a++)
+{
+	dotid[a]=[];
+	ghostid[a]=[];
+	ghost2id[a]=[];
+	dotv[a]=[];
+	up[a]=[];
+	down[a]=[];
+	right[a]=[];
+	left[a]=[];
+	for(var b=1; b<13; b++)
+	{
+				
+
+		if(a==3&&b>4&&b<9)
+			continue;
+		dotid[a][b]=a*100+b;
+		ghostid[a][b]=a*100+b;
+		ghost2id[a][b]=a*100+b;
+		
+
+		dotv[a][b]=0;
+		if(((a==1)&&(b==3||b==9))||((a==2)&&(b==1||b==11))||((a==3)&&b==4)||((a==4)&&((b==1)||b==11))||((a==5)&&(b==3||b==9)))
+		    right[a][b]=1;
+		else
+		    right[a][b]=0;
+		if(((a==1)&&(b==4||b==10))||((a==2)&&(b==2||b==12))||((a==3)&&b==9)||((a==4)&&((b==2)||b==12))||((a==5)&&(b==4||b==10)))
+		    left[a][b]=1;
+		else
+		left[a][b]=0;
+		if((a==1&&(b==2||b==5||b==6||b==7||b==8||b==11))||(a==2&&(b==3||b==5||b==6||b==7||b==8||b==10))||(a==3&&(b==3||b==10))||(a==4&&(b==2||b==5||b==6||b==7||b==8||b==11)))
+		down[a][b]=1;
+		else
+		down[a][b]=0;
+		
+		if((a==2&&(b==2||b==5||b==6||b==7||b==8||b==11))||(a==3&&(b==3||b==5||b==6||b==7||b==8||b==10))||(a==4&&(b==3||b==5||b==6||b==7||b==8||b==10))||(a==4&&(b==3||b==5||b==6||b==7||b==8||b==10))||(a==5&&(b==2||b==5||b==6||b==7||b==8||b==11)))
+		up[a][b]=1;
+		else
+		up[a][b]=0;
+		
+		
+		    
+	}
+
+}
+}
+
+
+
+function llist()
+{	
+	this.right=function(){
+		if(check(1)==1)			//if check(x)==1 there is no wall.
+	{
+	dotv[i][j]=1;
+
+	j++;
+	}
+	return dotid[i][j];
+	}
+	
+	this.left=function(){
+	
+		if(check(2)==1)
+	{
+	dotv[i][j]=1;
+
+	j--;
+	}
+
+	return dotid[i][j];
+	}
+	
+
+	this.down=function(){
+	if(check(4)==1)
+	{
+	dotv[i][j]=1;
+
+	i++;
+	}	
+	return dotid[i][j];
+	}
+
+	this.up=function(){
+		if(check(3)==1)
+	{
+	dotv[i][j]=1;
+
+	i--;
+	}
+
+	return dotid[i][j];
+	}
+
+	this.current=function(){
+		dotv[i][j]=1;
+	return dotid[i][j];
+	}
+}
+
+function glist()
+{	
+	this.right=function(){
+		if(checkg(1)==1&&n!=12)
+	{
+		n++;
+	}
+	else
+	 ghost.down();
+	return ghostid[m][n];
+	}
+	
+	this.left=function(){
+	
+	if(checkg(2)==1&&n!=1)
+	{
+		n--;
+	}
+	else 
+
+	ghost.up();
+	return ghostid[m][n];
+	}
+	
+
+	this.down=function(){
+	if(checkg(4)==1&&m!=5)
+	{
+		m++;
+	}	
+	else 
+	ghost.right();
+	return ghostid[m][n];
+	}
+
+	this.up=function(){
+		if(checkg(3)==1&&m!=1)
+	{
+		m--;
+	}
+	else
+	 ghost.left();
+	return ghostid[m][n];
+	}
+
+	this.current=function(){
+	return ghostid[m][n];
+	}
+}
+
+function g2list()
+{	
+	this.right=function(){
+		if(check2g(1)==1&&y!=12)
+	{
+		y++;
+	}
+	else
+	 ghost2.up();
+	return ghost2id[x][y];
+	}
+	
+	this.left=function(){
+	
+	if(check2g(2)==1&&y!=1)
+	{
+		y--;
+	}
+	else 
+
+	ghost2.down();
+	return ghost2id[x][y];
+	}
+	
+
+	this.down=function(){
+	if(check2g(4)==1&&x!=5)
+	{
+		x++;
+	}	
+	else 
+	ghost2.right();
+	return ghost2id[x][y];
+	}
+
+	this.up=function(){
+		if(check2g(3)==1&&x!=1)
+	{
+		x--;
+	}
+	else
+	 ghost2.left();
+	return ghost2id[x][y];
+	}
+
+	this.current=function(){
+	return ghost2id[x][y];
+	}
+}
+
+var dot=new llist();
+var ghost=new glist();
+var ghost2=new g2list();
+var tar;
+var gtar;
+var g2tar;
+var count=0;
+function press(e)
+{		tar=dot.current();
+		count++;
+		gtar=ghost.current();
+		g2tar=ghost2.current();
+	 var event = window.event ? window.event : e;
+    	
+	var rnum=Math.ceil(Math.random()*4);
+	var r2num=follow();
+	
+	if((i==m&&j==n)||(i==x&&j==y)||(count>120))
+		{
+	
+		alert("GAME OVER:");
+		return;
+		
+		}
+	if(score==275)
+		{
+		alert("You Won");
+		return;
+		
+		}
+	
+	
+	if(rnum==1)
+		{
+			if(n!=1)
+			{			
+			var gele=document.getElementById(gtar);
+			if(dotv[m][n]==0)
+			{gele.src="./dot.jpg";
+			gele.style.width="15px";
+			gele.style.height="15px";
+			}
+			else
+			{
+			gele.src="./black.png";
+			gele.style.width="5px";
+			gele.style.height="5px";
+			}	
+			gtar=ghost.left();
+			var gele=document.getElementById(gtar);
+			gele.src="./inky.svg";
+			gele.style.width="45px";
+			gele.style.height="45px";	
+
+
+			}
+
+		}	
+	else if(rnum==2)
+		{
+			if(n!=12)
+			{			
+			var gele=document.getElementById(gtar);
+			if(dotv[m][n]==0)
+			{gele.src="./dot.jpg";
+			gele.style.width="15px";
+			gele.style.height="15px";
+			}
+			else
+			{
+			gele.src="./black.png";
+			gele.style.width="5px";
+			gele.style.height="5px";
+			}	
+			gtar=ghost.right();
+			var gele=document.getElementById(gtar);
+			gele.src="./inky.svg";
+			gele.style.width="45px";
+			gele.style.height="45px";	
+
+
+			}
+
+
+		}
+	else if(rnum==3)
+		{
+			
+			if(m!=1)
+			{			
+			var gele=document.getElementById(gtar);
+			if(dotv[m][n]==0)
+			{gele.src="./dot.jpg";
+			gele.style.width="15px";
+			gele.style.height="15px";
+			}
+			else
+			{
+			gele.src="./black.png";
+			gele.style.width="5px";
+			gele.style.height="5px";
+			}	
+			gtar=ghost.up();
+			var gele=document.getElementById(gtar);
+			gele.src="./inky.svg";
+			gele.style.width="45px";
+			gele.style.height="45px";	
+
+
+			}
+
+
+		}
+	else if(rnum==4)
+		{
+			if(m!=5)
+			{			
+			var gele=document.getElementById(gtar);
+			if(dotv[m][n]==0)
+			{gele.src="./dot.jpg";
+			gele.style.width="15px";
+			gele.style.height="15px";
+			}
+			else
+			{
+			gele.src="./black.png";
+			gele.style.width="5px";
+			gele.style.height="5px";
+			}
+
+	
+			gtar=ghost.down();
+			
+			var gele=document.getElementById(gtar);
+			gele.src="./inky.svg";
+			gele.style.width="45px";
+			gele.style.height="45px";	
+
+
+			}
+
+
+		}
+	
+	/*sdfgsdgsdgsdgsdgsgsdgsdgsdgsd*/
+	if(r2num==1)
+		{
+			if(y!=1)
+			{			
+			var gele=document.getElementById(g2tar);
+			if(dotv[x][y]==0)
+			{gele.src="./dot.jpg";
+			gele.style.width="15px";
+			gele.style.height="15px";
+			}
+			else
+			{
+			gele.src="./black.png";
+			gele.style.width="5px";
+			gele.style.height="5px";
+			}	
+			g2tar=ghost2.left();
+			var gele=document.getElementById(g2tar);
+			gele.src="./clyde.svg";
+			gele.style.width="45px";
+			gele.style.height="45px";	
+
+
+			}
+
+		}	
+	else if(r2num==2)
+		{
+			if(y!=12)
+			{			
+			var gele=document.getElementById(g2tar);
+			if(dotv[x][y]==0)
+			{gele.src="./dot.jpg";
+			gele.style.width="15px";
+			gele.style.height="15px";
+			}
+			else
+			{
+			gele.src="./black.png";
+			gele.style.width="5px";
+			gele.style.height="5px";
+			}	
+			g2tar=ghost2.right();
+			var gele=document.getElementById(g2tar);
+			gele.src="./clyde.svg";
+			gele.style.width="45px";
+			gele.style.height="45px";	
+
+
+			}
+
+
+		}
+	else if(r2num==3)
+		{
+			
+			if(x!=1)
+			{			
+			var gele=document.getElementById(g2tar);
+			if(dotv[x][y]==0)
+			{gele.src="./dot.jpg";
+			gele.style.width="15px";
+			gele.style.height="15px";
+			}
+			else
+			{
+			gele.src="./black.png";
+			gele.style.width="5px";
+			gele.style.height="5px";
+			}	
+			g2tar=ghost2.up();
+			var gele=document.getElementById(g2tar);
+			gele.src="./clyde.svg";
+			gele.style.width="45px";
+			gele.style.height="45px";	
+
+
+			}
+
+
+		}
+	else if(r2num==4)
+		{
+			if(x!=5)
+			{			
+			var gele=document.getElementById(g2tar);
+			if(dotv[x][y]==0)
+			{gele.src="./dot.jpg";
+			gele.style.width="15px";
+			gele.style.height="15px";
+			}
+			else
+			{
+			gele.src="./black.png";
+			gele.style.width="5px";
+			gele.style.height="5px";
+			}
+
+	
+			g2tar=ghost2.down();
+			
+			var gele=document.getElementById(g2tar);
+			gele.src="./clyde.svg";
+			gele.style.width="45px";
+			gele.style.height="45px";	
+
+
+			}
+
+
+		}
+			if((i==m&&j==n)||(i==x&&j==y)||(count>120))
+		{
+	
+		alert("GAME OVER:");
+		return;
+		
+		}
+	
+
+	if(event.keyCode==37)
+	{
+	
+	if(j!=1)
+	{
+	
+	var ele=document.getElementById(tar);
+
+		ele.src="./black.png";
+		ele.style.width="5px";
+		ele.style.height="5px";
+
+	tar=dot.left();
+	var ele=document.getElementById(tar);
+		    if(dotv[i][j]==0)
+		    score+=5;
+	ele.src="./left.gif";
+	ele.style.width="45px";
+	ele.style.height="45px";
+	
+	}
+	}
+	if(event.keyCode==38)
+		{
+	
+	if(i!=1)
+	{
+
+		var ele=document.getElementById(tar);
+		ele.src="./black.png";
+		ele.style.width="5px";
+		ele.style.height="5px";
+		tar=dot.up();
+	var ele=document.getElementById(tar);
+	if(dotv[i][j]==0)
+		    score+=5;
+	ele.src="./up.gif";
+	ele.style.width="45px";
+	ele.style.height="45px";
+	
+	}
+		}
+	if(event.keyCode==39)
+		{
+	if(j!=12)
+	{
+		var ele=document.getElementById(tar);
+
+		ele.src="./black.png";
+		ele.style.width="5px";
+		ele.style.height="5px";
+		tar=dot.right();
+	var ele=document.getElementById(tar);
+			//ele.style.visibility="visible";
+			if(dotv[i][j]==0)
+		    score+=5;
+	ele.src="./right.gif";
+	ele.style.width="45px";
+	ele.style.height="45px";
+	}
+		}
+	if(event.keyCode==40)
+		{
+	if(i!=5)
+	{
+		var ele=document.getElementById(tar);
+		ele.src="./black.png";
+		ele.style.width="5px";
+		ele.style.height="5px";
+		tar=dot.down();
+	var ele=document.getElementById(tar);
+	if(dotv[i][j]==0)
+		    score+=5;
+	ele.src="./down.gif";
+	ele.style.width="45px";
+	ele.style.height="45px";
+	
+	}
+	
+	}
+	
+	
+	
+		
+    scoref();
+	
+}
+function scoref()
+{
+    document.getElementById("scre").innerHTML="SCORE :"+score;
+    document.getElementById("highscore").innerHTML="STEP COUNT: "+count;
+
+
+}
+
+function check(k)
+{   
+    if(k==1)
+    {
+    
+    if(right[i][j]==1)
+       	return 0;
+    else 
+	return 1;
+    }
+    if(k==2)
+      {
+    if(left[i][j]==1)
+  	  return 0;
+    else 
+	return 1;
+    }
+    if(k==3)
+    {
+        if(up[i][j]==1)
+           return 0;
+        else
+           return 1;
+    }
+     if(k==4)
+    {
+        if(down[i][j]==1)
+           return 0;
+        else
+           return 1;
+    }
+}
+
+function checkg(k)
+{   
+    if(k==1)
+    {
+    
+    if(right[m][n]==1)
+       	return 0;
+    else 
+	return 1;
+    }
+    if(k==2)
+      {
+    if(left[m][n]==1)
+  	  return 0;
+    else 
+	return 1;
+    }
+    if(k==3)
+    {
+        if(up[m][n]==1)
+           return 0;
+        else
+           return 1;
+    }
+     if(k==4)
+    {
+        if(down[m][n]==1)
+           return 0;
+        else
+           return 1;
+    }
+}
+
+function check2g(k)
+{   
+    if(k==1)
+    {
+    
+    if(right[x][y]==1)
+       	return 0;
+    else 
+	return 1;
+    }
+    if(k==2)
+      {
+    if(left[x][y]==1)
+  	  return 0;
+    else 
+	return 1;
+    }
+    if(k==3)
+    {
+        if(up[x][y]==1)
+           return 0;
+        else
+           return 1;
+    }
+     if(k==4)
+    {
+        if(down[x][y]==1)
+           return 0;
+        else
+           return 1;
+    }
+}
+
+function follow()
+{	
+
+
+	if(y>(j+1))
+	return 1;
+	else if(y<(j-1))
+	return 2;
+	else if(x>i)
+	return 3;
+	else return 4;
+
+
+
+}
+
+</script>
+</head>
+<body onkeydown="press(event)" >
+<div class=pacmaze>
+<div class=maze>
+<img src="./maze.jpg" height=670 width=1280  style="z-index:0; top:-10px; left:0px"></img>
+
+</div>
+<img src="./right.gif" style="z-index:1; width:45px; height:45px; left:70px; top:155px;" id="101"></img>
+<div class="dot">
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:180px; top:160px;" id="102"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:280px; top:160px;" id="103"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:380px; top:160px;" id="104"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:480px; top:160px;" id="105"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:580px; top:160px;" id="106"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:680px; top:160px;" id="107"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:780px; top:160px;" id="108"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:880px; top:160px;" id="109"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:980px; top:160px;" id="110"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1080px; top:160px;" id="111"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1180px; top:160px;" id="112"></img>
+
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:80px; top:240px;" id="201"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:180px; top:240px;" id="202"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:280px; top:240px;" id="203"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:380px; top:240px;" id="204"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:480px; top:240px;" id="205"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:580px; top:240px;" id="206"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:680px; top:240px;" id="207"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:780px; top:240px;" id="208"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:880px; top:240px;" id="209"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:980px; top:240px;" id="210"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1080px; top:240px;" id="211"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1180px; top:240px;" id="212"></img>
+
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:80px; top:335px;" id="301"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:180px; top:335px;" id="302"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:280px; top:335px;" id="303"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:380px; top:335px;" id="304"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:880px; top:335px;" id="309"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:980px; top:335px;" id="310"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1080px; top:335px;" id="311"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1180px; top:335px;" id="312"></img>
+
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:80px; top:425px;"  id="401"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:180px; top:425px;" id="402"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:280px; top:425px;" id="403"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:380px; top:425px;" id="404"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:480px; top:425px;" id="405"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:580px; top:425px;" id="406"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:680px; top:425px;" id="407"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:780px; top:425px;" id="408"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:880px; top:425px;" id="409"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:980px; top:425px;" id="410"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1080px; top:425px;" id="411"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1180px; top:425px;" id="412"></img>
+
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:80px; top:515px;"  id="501"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:180px; top:515px;" id="502"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:280px; top:515px;" id="503"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:380px; top:515px;" id="504"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:480px; top:515px;" id="505"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:580px; top:515px;" id="506"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:680px; top:515px;" id="507"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:780px; top:515px;" id="508"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:880px; top:515px;" id="509"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:980px; top:515px;" id="510"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1080px; top:515px;" id="511"></img>
+<img src="./dot.jpg" height=15px width=15px style="z-index:1; left:1180px; top:515px;" id="512"></img>
+
+
+
+</div>
+</div>
+
+
+
+<p id=scre style="color:red; font-size:40px;  width:300px; position:absolute; top:550px" >
+SCORE :0</p>
+
+<ul style="color:red; position:absolute; top:575px; left:300px;"><li id=play onclick="idloading()">PLAY</li><a style="text-decoration:none; color:red;" href="./pacman.html" id=restart><li>RESTART</li></a><li id="highscore" >STEP COUNT: 0</li></ul>
+<p>Max number of steps provided is 120</p>
+<audio autoplay loop>
+  <source src="theme.mp3" type="audio/mpeg">
+</audio>
+</body>
+
